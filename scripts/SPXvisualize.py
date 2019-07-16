@@ -42,6 +42,7 @@ import datetime as dt
 
 def callback(string):
     buffer = string.data
+    buffer=strip_non_ascii(buffer)
     buffer=buffer.split(',')
     string=np.asarray(buffer)
 
