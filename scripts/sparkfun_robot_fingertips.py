@@ -80,6 +80,6 @@ def publisher():
 #===============================================================================
 if __name__ == '__main__':
     print("[Initialising Fingertips...]\n")
-    rospy.init_node('fingertips_SPX', anonymous=True)
+    rospy.init_node('fingertips_SPX_pub', anonymous=True)
     publisher()
 
