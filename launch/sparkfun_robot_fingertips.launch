@@ -1,0 +1,5 @@
+<launch>
+	
+	<node name="fingertips_SPX_pub" pkg="sparkfun_robot_fingertips" type="sparkfun_robot_fingertips.py" />
+	<node name="fingertips_SPX_list" pkg="sparkfun_robot_fingertips" type="SPXvisualize.py" />
+</launch>
