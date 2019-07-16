@@ -63,7 +63,7 @@ def callback(string):
 def listener():
 
     # plt.ion()
-    rospy.init_node('listener', anonymous=True)
+    rospy.init_node('fingertips_SPX_list', anonymous=True)
     rospy.Subscriber("sensors/hand/spx", String, callback)
     # spin() simply keeps python from exiting until this node is stopped
     rospy.spin()
