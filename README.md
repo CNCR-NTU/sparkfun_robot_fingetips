@@ -18,7 +18,7 @@ This is repository for hosting the Sparkfun Robot Fingertips sensors sofware rel
 * Ubuntu Linux 18.04 LTS
 * ROS Melodic [installed](http://wiki.ros.org/melodic/Installation/Ubuntu) and [configured](http://wiki.ros.org/ROS/Tutorials/InstallingandConfiguringROSEnvironment)
 * Arduino IDE
-* Softwareserial Arduino library
+* Softwarewire Arduino library
 
 # Installation procedure:
 ## Step 1: clone the repository
