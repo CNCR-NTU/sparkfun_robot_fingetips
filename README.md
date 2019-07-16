@@ -5,8 +5,8 @@ This is repository for hosting the Sparkfun Robot Fingertips sensors sofware rel
 # Requirements
 
 ## Documentation
-* [LPS25HB user manual] (https://github.com/CNCR-NTU/sparkfun_robot_fingetips/blob/master/doc/LPS25HB.pdf)
-* [VCNL4040 user manual] (https://github.com/CNCR-NTU/sparkfun_robot_fingetips/blob/master/doc/vcnl4040.pdf)
+* [LPS25HB user manual](https://github.com/CNCR-NTU/sparkfun_robot_fingetips/blob/master/doc/LPS25HB.pdf)
+* [VCNL4040 user manual](https://github.com/CNCR-NTU/sparkfun_robot_fingetips/blob/master/doc/vcnl4040.pdf)
 
 ## Hardware
 * 3x [Sparkfun Robotic Fingertips](https://www.sparkfun.com/products/14687)
