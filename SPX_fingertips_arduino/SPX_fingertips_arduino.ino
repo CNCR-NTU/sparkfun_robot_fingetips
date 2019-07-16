@@ -1,15 +1,9 @@
-#define TEST_SOFTWAREWIRE
-#ifdef TEST_SOFTWAREWIRE       
 // SoftwareWire library must be installed in order to use other analog pins for I2C communication
 #include "SoftwareWire.h"
 SoftwareWire myWire( A1, A0);   // A1=SDA, A2=SCL
 SoftwareWire my2Wire( A2, A0);  // A3=SDA, A2=SCL
 SoftwareWire my3Wire( A3, A0);
-#else                           // Make code work with normal Wire library.
-#include <Arduino.h>
-#include <Wire.h>
-#define myWire Wire         // use the real Arduino Wire library instead of the SoftwareWire.
-#endif
+
 //   I2C address is LPS25HB
 #define addr1 0x5D
 //   I2C address for VCNL4040
