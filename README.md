@@ -5,7 +5,8 @@ This is repository for hosting the Sparkfun Robot Fingertips sensors sofware rel
 # Requirements
 
 ## Documentation
-* TBC
+* [LPS25HB user manual]
+* [VCNL4040 user manual]
 
 ## Hardware
 * 3x [Sparkfun Robotic Fingertips](https://www.sparkfun.com/products/14687)
