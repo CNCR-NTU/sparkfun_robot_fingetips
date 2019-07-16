@@ -26,9 +26,25 @@ This is repository for hosting the Sparkfun Robot Fingertips sensors sofware rel
 $ cd ~/catkin_ws/src
 $ git clone https://github.com/CNCR-NTU/sparkfun_robot_fingertips.git
 ```
+## Step 2: compile and install
+```
+$ cd ~/catkin_ws
+$ catkin_make
+$ catkin_make install
+$ source devel/setup.sh
+```
 
 # Understanding the data
-TBC
+The data is retreived from the arduino board through the ROS "serial" library. The data coming from the three sensors is published as a string with format:
+
+"pressure1,temp1,proximity1,light1,pressure2,temp2,proximity2,light2,pressure3,temp3,proximity3,light3"
+
+The output vector (sensorValues) of the subscriber is an array containig the numerical values of the sensor data, with format:
+
+string[pressure1,temp1,proximity1,light1,pressure2,temp2,proximity2,light2,pressure3,temp3,proximity3,light3]
+
+
+
 # Contacts
 Computational Neurosciences and Cognitive Robotics Group at the Nottingham Trent University.
 
