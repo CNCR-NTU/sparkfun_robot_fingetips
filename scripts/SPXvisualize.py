@@ -128,7 +128,7 @@ def main():
         
         plt.pause(0.001)
 
-def listener()
+def listener():
     while not rospy.is_shutdown():
         try:
             rospy.Subscriber("sensors/hand/spx", String, callback, queue_size=10)
