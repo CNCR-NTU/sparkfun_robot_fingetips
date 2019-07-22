@@ -76,6 +76,8 @@ def callback(string):
     IMGcounter = IMGcounter + 1
     if IMGcounter==512:
         IMGcounter=0
+    pub0.publish(fingertip1)
+    pub1.publish(fingertip2)
 
 
 
@@ -144,9 +146,8 @@ def main():
             plt.show()
             plt.pause(0.001)
             plt.clf()
-            rospy.loginfo(fingertip1)
-            pub0.publish(fingertip1)
-            pub1.publish(fingertip2)
+            #rospy.loginfo(fingertip1)
+
 
 
 
