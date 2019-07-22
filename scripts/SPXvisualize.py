@@ -116,7 +116,7 @@ def main():
 
             ax4 = plt.subplot(427)
             plt.ylabel("LIGHT \n [lux]")
-            ax4.set_ylim(0, 1000)
+            ax4.set_ylim(0, 10000)
             plt.bar(0, fingertip1[3])
             ax4.text(-0.1, 1, a + str(round(fingertip1[3],2)))
 
@@ -137,7 +137,7 @@ def main():
             ax7.text(-0.1, 1, a + str(round(fingertip2[2],2)))
 
             ax8 = plt.subplot(428)
-            ax8.set_ylim(0, 1000)
+            ax8.set_ylim(0, 10000)
             plt.bar(0, fingertip2[3], color='cyan')
             ax8.text(-0.1, 1, a + str(round(fingertip2[3],2)))
 
