@@ -44,13 +44,13 @@ import matplotlib
 import matplotlib.pyplot as plt
 import time
 
-global timing, index_counter, time_start, temp_th, intercept
+global timing, index_counter, time_start, temp_th, intercept, flag,j
 BUFF_SIZE = 512
 P = 0.80
 
 
 def callback(string):
-    global timing, index_counter, time_start, sensorvalue,pressure_zero1,pressure_zero2, pressure_offset1, pressure_offset2, IMGcounter, fingertip1, fingertip2, temp_th, intercept
+    global timing, index_counter, time_start,j, sensorvalue,pressure_zero1,pressure_zero2, pressure_offset1, pressure_offset2, IMGcounter, fingertip1, fingertip2, temp_th, intercept,flag
     buffer = string.data
     buffer = buffer.split(',')
     if index_counter == 0:
@@ -71,22 +71,39 @@ def callback(string):
 
     fingertip1=np.array([sensorvalue[0,IMGcounter],sensorvalue[1,IMGcounter],sensorvalue[2,IMGcounter],sensorvalue[3,IMGcounter]])
     fingertip2=np.array([sensorvalue[4,IMGcounter],sensorvalue[5,IMGcounter],sensorvalue[6,IMGcounter],sensorvalue[7,IMGcounter]])
+    rospy.loginfo(fingertip1[0])
+    #rospy.loginfo(fingertip1[1])
 
     if timing == 0:
         pressure_zero1 = fingertip1[0]
         pressure_zero2 = fingertip2[0]
         timing = 1
+        temp_th=fingertip1[1]
+        pressure_offset1=((fingertip1[1]+intercept)/0.1939)-pressure_zero1
 
-    if temp_th==fingertip1[1] or temp_th<fingertip1[1]:
-        pressure_offset1=((fingertip1[1]+165.97)/0.1939) -pressure_zero1
+
+    if temp_th<fingertip1[1]:
+        if flag==False:
+           intercept=((0.1939*(pressure_offset1+pressure_zero1))-fingertip1[1])
+           flag=True
+        pressure_offset1=((fingertip1[1]+intercept)/0.1939)-pressure_zero1
         pressure_offset2=((fingertip2[1]+188.57)/0.2132) #-pressure_zero2
+
+
     if temp_th>fingertip1[1]:
-        intercept=((0.1814*fingertip1[0])-fingertip1[1])
-        pressure_offset1=((fingertip1[1]+intercept)/0.1814) -pressure_zero1
+        if flag==True:
+           intercept=((0.1763*(pressure_offset1+pressure_zero1))-fingertip1[1])
+           flag=False
+        pressure_offset1=(((fingertip1[1])+intercept)/0.1763)-pressure_zero1
         pressure_offset2=((fingertip2[1]+188.57)/0.2132) #-pressure_zero2
+    rospy.loginfo(pressure_offset1+pressure_zero1)
+    rospy.loginfo(timing)
+    if IMGcounter==1:
+            j=fingertip1[0]-pressure_offset1
+    fingertip1[0]=fingertip1[0]-pressure_offset1-j
 
-    fingertip1[0]=fingertip1[0]-pressure_offset1
     fingertip2[0]=fingertip2[0]-pressure_offset2
+    rospy.loginfo(fingertip1[0])
 
 
     temp_th=fingertip1[1]
@@ -96,7 +113,6 @@ def callback(string):
         IMGcounter=0
     pub0.publish(fingertip1)
     pub1.publish(fingertip2)
-    rospy.loginfo(intercept)
 
 
 def main():
@@ -183,17 +199,19 @@ if __name__ == '__main__':
     fingertip1=np.zeros(4)
     fingertip2=np.zeros(4)
     timing = 0
-    IMGcounter = -1
+    IMGcounter = 0
     pressure_offset1 = 0
     pressure_offset2 = 0
     pressure_zero1=0
     pressure_zero2=0
     a='Value:'
+    flag=False
     index_counter = 0
     time_start = 0
     alpha=4.6296
     temp_th=0
-    intercept=0
+    intercept=165.97
+    j=0
     plt.ion()
     rospy.init_node('fingertips_SPX_list', anonymous=True)
     listener()
