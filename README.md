@@ -1,4 +1,4 @@
-# sparkfun_robot_fingetips
+# sparkfun_robot_fingertips
 
 This is repository for hosting the Sparkfun Robot Fingertips sensors sofware released under the lgpl3.0 license.
 
