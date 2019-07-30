@@ -67,7 +67,7 @@ def callback(string):
     fingertip1=np.array([sensorvalue[0,IMGcounter],sensorvalue[1,IMGcounter],sensorvalue[2,IMGcounter],sensorvalue[3,IMGcounter]])
     fingertip2=np.array([sensorvalue[4,IMGcounter],sensorvalue[5,IMGcounter],sensorvalue[6,IMGcounter],sensorvalue[7,IMGcounter]])
 
-    if fingertip1[2] > 1100 or fingertip2[2] > 1000:
+    if fingertip1[2] > 2000 or fingertip2[2] > 2000:
 
         if timing==0: #put flag instead of variable
             pressure_zero1 = fingertip1[0]
@@ -104,7 +104,7 @@ def callback(string):
         if timing==0:
              j1=fingertip1[0]-pressure_offset1
         pressure_value1=fingertip1[0]-pressure_offset1-j1
-        fingertip1[0]=(pressure_value1*0.9)+((fingertip1[2]/1000)*0.1)     #adaptive filtering to avoid excessive pressure fluctuations
+        fingertip1[0]=(pressure_value1*0.94)+((fingertip1[2]/1000)*0.06)     #adaptive filtering to avoid excessive pressure fluctuations
         if fingertip1[0] > -0.15 and fingertip1[0] < 0.15:
             fingertip1[0]=0
         temp_th1=fingertip1[1]
@@ -119,12 +119,18 @@ def callback(string):
         if timing==0:
             j2=fingertip2[0]-pressure_offset2
         pressure_value2=(fingertip2[0]-pressure_offset2-j2)*1.4
-        fingertip2[0]=(pressure_value2*0.9)+((fingertip2[2]/1000)*0.1) ##adaptive filtering to avoid excessive pressure fluctuations
+        fingertip2[0]=(pressure_value2*0.94)+((fingertip2[2]/1000)*0.06) ##adaptive filtering to avoid excessive pressure fluctuations
         if fingertip2[0] > -0.15 and fingertip2[0] < 0.15:
             fingertip2[0]=0
         temp_th2=fingertip2[1]
         timing=1
-    else:
+
+    if fingertip1[2] < 2000 and fingertip2[2] < 2000:
+        fingertip1[0]=0
+        fingertip2[0]=0
+        timing=0
+
+    if fingertip1[0]<0 or fingertip2[0]<0 or fingertip1[0]>20 or fingertip2[0]>20:
         fingertip1[0]=0
         fingertip2[0]=0
         timing=0
