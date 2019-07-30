@@ -72,12 +72,12 @@ def callback(string):
         if timing==0: #put flag instead of variable
             pressure_zero1 = fingertip1[0]
             pressure_zero2 = fingertip2[0]
+            intercept1 = 165.97
+            intercept2 = 188.57
             temp_th1=fingertip1[1]
             temp_th2=fingertip2[1]
             pressure_offset1=((fingertip1[1]+intercept1)/0.1939)-pressure_zero1
-            rospy.loginfo(pressure_offset1)
             pressure_offset2=((fingertip2[1]+intercept2)/0.2132)-pressure_zero2
-
 
         if temp_th1<fingertip1[1] or temp_th1<fingertip1[1]:           #this section is to reduce pressure zero-point float with the temperature.
             if flag1==False:
@@ -104,11 +104,10 @@ def callback(string):
         if timing==0:
              j1=fingertip1[0]-pressure_offset1
         pressure_value1=fingertip1[0]-pressure_offset1-j1
-        fingertip1[0]=(pressure_value1*0.9)+((fingertip1[2]/1000)*0.1) #adaptive filtering to avoid excessive pressure fluctuations
-        #if fingertip1[0] > -0.1 and fingertip1[0] < 0.1:
-        #    fingertip1[0]=0
+        fingertip1[0]=(pressure_value1*0.9)+((fingertip1[2]/1000)*0.1)     #adaptive filtering to avoid excessive pressure fluctuations
+        if fingertip1[0] > -0.15 and fingertip1[0] < 0.15:
+            fingertip1[0]=0
         temp_th1=fingertip1[1]
-
 
         ########################################
 
@@ -121,8 +120,8 @@ def callback(string):
             j2=fingertip2[0]-pressure_offset2
         pressure_value2=(fingertip2[0]-pressure_offset2-j2)*1.4
         fingertip2[0]=(pressure_value2*0.9)+((fingertip2[2]/1000)*0.1) ##adaptive filtering to avoid excessive pressure fluctuations
-        #if fingertip2[0] > -0.1 and fingertip2[0] < 0.1:
-        #    fingertip2[0]=0
+        if fingertip2[0] > -0.15 and fingertip2[0] < 0.15:
+            fingertip2[0]=0
         temp_th2=fingertip2[1]
         timing=1
     else:
