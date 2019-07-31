@@ -104,8 +104,8 @@ def callback(string):
         if timing==0:
              j1=fingertip1[0]-pressure_offset1
         pressure_value1=fingertip1[0]-pressure_offset1-j1
-        fingertip1[0]=(pressure_value1*0.94)+((fingertip1[2]/1000)*0.06)     #adaptive filtering to avoid excessive pressure fluctuations
-        if fingertip1[0] > -0.15 and fingertip1[0] < 0.15:
+        fingertip1[0]=(pressure_value1*0.96)+((fingertip1[2]/1000)*0.04)     #adaptive filtering to avoid excessive pressure fluctuations (it is more stable but less sensible for low values)
+        if fingertip1[0] > -0.1 and fingertip1[0] < 0.1:
             fingertip1[0]=0
         temp_th1=fingertip1[1]
 
@@ -118,9 +118,9 @@ def callback(string):
             pressure_offset2=(((fingertip2[1])+intercept2)/0.1800) -pressure_zero2
         if timing==0:
             j2=fingertip2[0]-pressure_offset2
-        pressure_value2=(fingertip2[0]-pressure_offset2-j2)*1.4
-        fingertip2[0]=(pressure_value2*0.94)+((fingertip2[2]/1000)*0.06) ##adaptive filtering to avoid excessive pressure fluctuations
-        if fingertip2[0] > -0.15 and fingertip2[0] < 0.15:
+        pressure_value2=(fingertip2[0]-pressure_offset2-j2)*2
+        fingertip2[0]=(pressure_value2*0.96)+((fingertip2[2]/1000)*0.04) ##adaptive filtering to avoid excessive pressure fluctuations
+        if fingertip2[0] > -0.1 and fingertip2[0] < 0.1:
             fingertip2[0]=0
         temp_th2=fingertip2[1]
         timing=1
