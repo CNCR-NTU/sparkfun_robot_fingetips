@@ -34,6 +34,7 @@ __file_name__ = 'pubFingertipSPX.py'
 __description__ = 'Subscribe SPX fingertip sensors'
 __compatibility__ = "Python 2 and Python 3"
 __platforms__ = "Sawyer and AR10 hand"
+global fingertip1
 
 #===============================================================================
 # IMPORT STATEMENTS
@@ -42,6 +43,8 @@ __platforms__ = "Sawyer and AR10 hand"
 import rospy
 import os
 import cv2
+import sys
+
 from rospy_tutorials.msg import Floats
 from rospy.numpy_msg import numpy_msg
 from std_msgs.msg import String
@@ -50,27 +53,51 @@ import matplotlib
 import matplotlib.pyplot as plt
 import time
 
-
-global i
+global fingertip1,fingertip2,i
 #===============================================================================
 # METHODS
 #===============================================================================
 
 def callback1(data):
+    global fingertip1
     fingertip1 = np.array(data.data)
-    fingertip1 = fingertip1.reshape((4, 1, 1))
-    aux = fingertip1[0].astype(np.uint8)
-    aux = cv2.resize(aux, (100,100), interpolation=cv2.INTER_AREA)
-    im_color = (cv2.applyColorMap(aux, cv2.COLORMAP_HOT))
-    cv2.imshow("fingertip1 ", im_color)
-    cv2.waitKey(1)
+
+
+
+
+def callback2(data):
+    global fingertip2
+    fingertip2 = np.array(data.data)
+
+
+def main():
+    global fingertip1,fingertip2,values1,values2,h,i1,i2,flag
+    while not flag:
+        values1[i1] = fingertip1[0]
+        h[i1] = i1
+        # print(values1[i1])
+        i1 += 1
+        values2[i2] = fingertip2[0]
+        h[i2] = i2
+        # print(values1[i2])
+        i2 += 1
+        rospy.sleep(0.1)
+        if i2 == 100:
+            plt.plot(values1,'k')
+            plt.plot(values2, 'r')
+            plt.grid()
+            plt.show()
+            flag=True
+    rospy.signal_shutdown("ok")
+
 
 def listener():
+    global i1
     while not rospy.is_shutdown():
         try:
             rospy.Subscriber('sensors/spx_fingertips/0', Floats, callback1)
-            # rospy.Subscriber('sensors/spx_fingertips/1', Floats, callback2)
-
+            rospy.Subscriber('sensors/spx_fingertips/1', Floats, callback2)
+            main()
             rospy.spin()
         except rospy.ROSInterruptException:
             print("Shuting down the Biotac subscriber!")
@@ -83,5 +110,15 @@ def listener():
 #===============================================================================
 if __name__ == '__main__':
     rospy.init_node('listener', anonymous=True)
+    i1=0
+    i2=0
+    values1 = np.zeros(100)
+    values2 = np.zeros(100)
+    h=np.zeros(100)
+    fingertip1=np.zeros(4)
+    fingertip2=np.zeros(4)
+    flag=False
+
 
     listener()
+
