@@ -132,7 +132,7 @@ def callback(string):
 
 
 
-    if fingertip1[2] < 2000 and fingertip2[2] < 2000:
+    if fingertip1[2] < 17 and fingertip2[2] < 17:
         fingertip1[0]=0
         fingertip2[0]=0
         timing=0
