@@ -27,7 +27,7 @@ void setup()
   my2Wire.write(0xC0);
   my2Wire.endTransmission();
 
-  //turn on  LPS25HB for fingertip nr.2
+  //turn on  LPS25HB for fingertip nr.3
   my3Wire.begin();
   my3Wire.beginTransmission(addr1);  
   my3Wire.write(0x20);
@@ -36,41 +36,41 @@ void setup()
 
   //turn on  VCNL4040 for fingertip nr.1
   myWire.beginTransmission(addr2);   
-  myWire.write((byte)0x00);
+  myWire.write(0x0C);
   myWire.write((byte)0x00);
   myWire.write((byte)0x00);
   myWire.endTransmission();
   //configuring  VCNL4040 rate for fingertip nr.1 
   myWire.beginTransmission(addr2);   
   myWire.write(0x03);
-  myWire.write(0x0E);
-  myWire.write(0x0B);
+  myWire.write(byte(0x00));
+  myWire.write(byte(0x09));
   myWire.endTransmission();
 
   //turn on  VCNL4040 for fingertip nr.2
   my2Wire.beginTransmission(addr2);  
-  my2Wire.write((byte)0x00);
+  my2Wire.write(0x0C);
   my2Wire.write((byte)0x00);
   my2Wire.write((byte)0x00);
   my2Wire.endTransmission();
   //configuring  VCNL4040 rate for fingertip nr.2
   my2Wire.beginTransmission(addr2);  
   my2Wire.write(0x03);
-  my2Wire.write(0x0E);
-  my2Wire.write(0x0B);
+  my2Wire.write(byte(0x00));
+  my2Wire.write(byte(0x09));
   my2Wire.endTransmission();
 
   //turn on  VCNL4040 for fingertip nr.3
   my3Wire.beginTransmission(addr2);   
-  my3Wire.write((byte)0x00);
+  my3Wire.write(0x0C);
   my3Wire.write((byte)0x00);
   my3Wire.write((byte)0x00);
   my3Wire.endTransmission();
   //configuring  VCNL4040 rate for fingertip nr.3 
   my3Wire.beginTransmission(addr2);   
   my3Wire.write(0x03);
-  my3Wire.write(0x0E);
-  my3Wire.write(0x0B);
+  my3Wire.write(byte(0x00));
+  my3Wire.write(byte(0x09));
   my3Wire.endTransmission();
 }
 
@@ -213,21 +213,21 @@ void loop()
   // Converting data for first fingertip
   
   float proximity1 = get_proximity(proximity1_0, proximity1_1);
-  int light1= get_light(light1_0, light1_1);
+  unsigned int light1= get_light(light1_0, light1_1);
   float pressure1 = get_pressure(pressure1_0, pressure1_1, pressure1_2);
   float temp1 = get_temperature(temp1_0, temp1_1);
 
   // Converting data for second fingertip
 
   float proximity2 = get_proximity(proximity2_0, proximity2_1);
-  int light2 = get_light(light2_0, light2_1);
+  unsigned int light2 = get_light(light2_0, light2_1);
   float pressure2 = get_pressure(pressure2_0, pressure2_1, pressure2_2);
   float temp2 = get_temperature(temp2_0, temp2_1);
 
   // Converting data for third fingertip
 
   float proximity3 = get_proximity(proximity3_0, proximity3_1);
-  int light3= get_light(light3_0, light3_1);
+  unsigned int light3= get_light(light3_0, light3_1);
   float pressure3 = get_pressure(pressure3_0, pressure3_1, pressure3_2);
   float temp3 = get_temperature(temp3_0, temp3_1);
 
@@ -278,6 +278,6 @@ float get_proximity(int16_t pro0, int16_t pro1) {
 
 
 int get_light(int16_t light0, int16_t light1) { 
- int light_t = (light1<<8 | light0);
+ long light_t = (light1<<8 | light0);
   return light_t;
 }  
