@@ -126,11 +126,19 @@ def callback(string):
         temp_th2=fingertip2[1]
         timing=1
 
+    #### scaling the values to the range 0-255 #####
 
     fingertip1[0]=(fingertip1[0]/5)*255
     fingertip2[0]=(fingertip2[0]/5)*255
 
+    fingertip1[2]=(fingertip1[2]/2700)*255
+    fingertip2[2]=(fingertip2[2]/2700)*255
 
+    fingertip1[3]=(fingertip1[3]/65536)*255
+    fingertip2[3]=(fingertip2[3]/65536)*255
+    #rospy.loginfo(fingertip1[3])
+    
+    ###############################################
 
     if fingertip1[2] < 17 and fingertip2[2] < 17:
         fingertip1[0]=0
