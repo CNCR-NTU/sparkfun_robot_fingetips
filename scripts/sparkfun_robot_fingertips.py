@@ -51,7 +51,7 @@ def main(pub1):
     ser = serial.Serial(port='/dev/ttyUSB0',baudrate=9600,timeout=0.25)
     print("connected to: " + ser.portstr + ", baudrate: "+str(ser.baudrate))
     while flag:
-        while ser.in_waiting:  
+        while ser.in_waiting:
             string=ser.readline()
             pub1.publish(string) #Format: "pressure1,temp1,proximity1,light1,pressure2,temp2,proximity2,light2,pressure3,temp3,proximity3,light3"
 
@@ -82,4 +82,5 @@ if __name__ == '__main__':
     print("[Initialising Fingertips...]\n")
     rospy.init_node('fingertips_SPX_pub', anonymous=True)
     publisher()
+
 
