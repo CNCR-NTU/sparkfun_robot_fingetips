@@ -45,19 +45,18 @@ import matplotlib
 import matplotlib.pyplot as plt
 import time
 
-global timing, index_counter, time_start, temp_th1,temp_th2, intercept1,intercept2, flag1,flag2,j1,j2
+global zeroflag, index_counter, time_start, temp_th, intercept, flag, j
 BUFF_SIZE = 512
 P = 0.80
 
 
 def callback(string):
-    global timing, index_counter, time_start,j1,j2, sensorvalue,pressure_zero1,pressure_zero2, pressure_offset1, pressure_offset2
-    global IMGcounter, fingertip1, fingertip2, temp_th1, temp_th2,intercept1, intercept2,flag1,flag2, pressure_value1,pressure_value2
+    global zeroflag, index_counter, time_start, j, sensorvalue, pressure_zero, pressure_offset, IMGcounter, fingertip, temp_th, intercept, flag, pressure_value,fullscale
     buffer = string.data
     buffer = buffer.split(',')
     if index_counter == 0:
-        sensorvalue = np.zeros((8, BUFF_SIZE))
-    for i in range(0, 8):
+        sensorvalue = np.zeros((12, BUFF_SIZE))
+    for i in range(0, 11):
         sensorvalue[i, index_counter] = float(buffer[i])
     if index_counter < BUFF_SIZE - 1:
         index_counter += 1
@@ -65,114 +64,104 @@ def callback(string):
         index_counter = 0
         time_start += BUFF_SIZE
 
-    fingertip1=np.array([sensorvalue[0,IMGcounter],sensorvalue[1,IMGcounter],sensorvalue[2,IMGcounter],sensorvalue[3,IMGcounter]])
-    fingertip2=np.array([sensorvalue[4,IMGcounter],sensorvalue[5,IMGcounter],sensorvalue[6,IMGcounter],sensorvalue[7,IMGcounter]])
+    fingertip = np.array([sensorvalue[0, IMGcounter], sensorvalue[1, IMGcounter], sensorvalue[2, IMGcounter], sensorvalue[3, IMGcounter],
+                          sensorvalue[4, IMGcounter], sensorvalue[5, IMGcounter], sensorvalue[6, IMGcounter], sensorvalue[7, IMGcounter],
+                          sensorvalue[8, IMGcounter], sensorvalue[9, IMGcounter], sensorvalue[10, IMGcounter], sensorvalue[11, IMGcounter]])
 
-    if fingertip1[2] > 2000 or fingertip2[2] > 2000:
 
-        if timing==0: #put flag instead of variable
-            pressure_zero1 = fingertip1[0]
-            pressure_zero2 = fingertip2[0]
-            intercept1 = 165.97
-            intercept2 = 188.57
-            temp_th1=fingertip1[1]
-            temp_th2=fingertip2[1]
-            pressure_offset1=((fingertip1[1]+intercept1)/0.1939)-pressure_zero1
-            pressure_offset2=((fingertip2[1]+intercept2)/0.2132)-pressure_zero2
+    if fingertip[2] > 1300 or fingertip[6] > 1300 or fingertip[10] > 1300:
 
-        if temp_th1<fingertip1[1] or temp_th1<fingertip1[1]:           #this section is to reduce pressure zero-point float with the temperature.
-            if flag1==False:
-               intercept1=((0.1939*(pressure_offset1+pressure_zero1))-fingertip1[1])
-               flag1=True
-            pressure_offset1=((fingertip1[1]+intercept1)/0.1939)-pressure_zero1
+        if zeroflag == 0:  # put flag instead of variable
+            intercept[0] = 896.64
+            intercept[4] = 895.44
+            intercept[8] = 895.44
+            intercept[1] = 896.64
+            intercept[5] = 895.44
+            intercept[9] = 895.44
+            fullscale[0] = 0.747518
+            fullscale[4] = 3.755431
+            fullscale[8] = 4.37586
+            fullscale[1] = 30227
+            fullscale[5] = 25257
+            fullscale[9] = 18905
+            m[0]=4.2608
+            m[4]=4.2999
+            m[8]=4.2999
+            m[1]=4.2608
+            m[5]=4.2999
+            m[9]=4.2999
+            for i in ind:
+               pressure_zero[i] = fingertip[i]
+               temp_th[i] = fingertip[i+1]
+               pressure_offset[i] = (m[i]*fingertip[i+1]-intercept[i]) - pressure_zero[i]
+               j[i]= fingertip[i] - pressure_offset[i]
+        zeroflag = 1
+        for i in ind:
 
-        ##########################################
+            if temp_th[i] < fingertip[i+1] or temp_th[i] == fingertip[i+1]:  # this section is to reduce pressure zero-point float with the temperature.
+                if flag[i] == False:
+                    intercept[i] = ((m[i] * (fingertip[i+1])) - (pressure_offset[i] + pressure_zero[i]))
+                    flag[i] = True
+                pressure_offset[i] = (m[i]*fingertip[i+1]-intercept[i]) - pressure_zero[i]
 
-        if temp_th2<fingertip2[1] or temp_th2<fingertip2[1]:
-            if flag2==False:
-               intercept2=((0.2132*(pressure_offset2+pressure_zero2))-fingertip2[1])
-               flag2=True
-            pressure_offset2=((fingertip2[1]+intercept2)/0.2132)-pressure_zero2
 
-        ##########################################
+            if temp_th[i] > fingertip[i+1]:
+                if flag[i+1] == True:
+                    intercept[i+1] = ((m[i+1] * (fingertip[i+1])) - (pressure_offset[i] + pressure_zero[i]))
+                    flag[i+1] = False
+                pressure_offset[i] = (m[i+1]*fingertip[i+1]-intercept[i+1]) - pressure_zero[i]
 
-        if temp_th1>fingertip1[1]:
-            if flag1==True:
-               intercept1=((0.1763*(pressure_offset1+pressure_zero1))-fingertip1[1])
-               flag1=False
-            pressure_offset1=(((fingertip1[1])+intercept1)/0.1763)-pressure_zero1
+            pressure_value[i] = fingertip[i] - pressure_offset[i] - j[i]
+            temp_th[i]=fingertip[i+1]
+            if pressure_value[i]<0:
+                pressure_value[i]=0
+            fingertip[i] = (pressure_value[i] / fullscale[i]) * 255
+            fingertip[i+2] = (fingertip[i+2] / fullscale[i+1]) * 255
+        if fingertip[2] < 15 and fingertip[6] < 15 and fingertip[10] < 15:
+            fingertip[0] = 0
+            fingertip[4] = 0
+            fingertip[8] = 0
+            zeroflag = 0
+            #### scaling the values to the range 0-255 #####
 
-        if timing==0:
-             j1=fingertip1[0]-pressure_offset1
-        pressure_value1=fingertip1[0]-pressure_offset1-j1
-        fingertip1[0]=(pressure_value1*0.94)+((fingertip1[2]/1000)*0.06)     #adaptive filtering to avoid excessive pressure fluctuations
-        if fingertip1[0] > -0.15 and fingertip1[0] < 0.15:
-            fingertip1[0]=0
-        temp_th1=fingertip1[1]
+        if fingertip[0] < 0 or fingertip[4] < 0 or fingertip[0] > 255 or fingertip[4] > 255:
+             fingertip[0] = 0
+             fingertip[4] = 0
 
-        ########################################
+             zeroflag = 0
+    else:
+        fingertip[0] = 0
+        fingertip[4] = 0
+        fingertip[8] = 0
+                # adaptive filtering?
+#            if fingertip[i] > -0.15 and fingertip[i] < 0.15:
+#                fingertip[i] = 0
+#    print("pressure",fingertip[0],",",fingertip[4],",",fingertip[8])
+#    print("proximity",fingertip[2],",",fingertip[6],",",fingertip[10])
 
-        if temp_th2>fingertip2[1]:
-            if flag2==True:
-               intercept2=((0.1800*(pressure_offset2+pressure_zero2))-fingertip2[1])
-               flag2=False
-            pressure_offset2=(((fingertip2[1])+intercept2)/0.1800) -pressure_zero2
-        if timing==0:
-            j2=fingertip2[0]-pressure_offset2
-        pressure_value2=(fingertip2[0]-pressure_offset2-j2)*1.4
-        fingertip2[0]=(pressure_value2*0.94)+((fingertip2[2]/1000)*0.06) ##adaptive filtering to avoid excessive pressure fluctuations
-        if fingertip2[0] > -0.15 and fingertip2[0] < 0.15:
-            fingertip2[0]=0
-        temp_th2=fingertip2[1]
-        timing=1
+#    print(pressure_value[0],",",pressure_value[4],",",pressure_value[8])
 
-    #### scaling the values to the range 0-255 #####
 
-    fingertip1[0]=(fingertip1[0]/5)*255
-    fingertip2[0]=(fingertip2[0]/5)*255
-
-    fingertip1[2]=(fingertip1[2]/2700)*255
-    fingertip2[2]=(fingertip2[2]/2700)*255
-
-    fingertip1[3]=(fingertip1[3]/65536)*255
-    fingertip2[3]=(fingertip2[3]/65536)*255
-    #rospy.loginfo(fingertip1[3])
-    
-    ###############################################
-
-    if fingertip1[2] < 17 and fingertip2[2] < 17:
-        fingertip1[0]=0
-        fingertip2[0]=0
-        timing=0
-
-    if fingertip1[0]<0 or fingertip2[0]<0 or fingertip1[0]>255 or fingertip2[0]>255:
-        fingertip1[0]=0
-        fingertip2[0]=0
-        timing=0
 
     IMGcounter = IMGcounter + 1
-    if IMGcounter==512:
-        IMGcounter=0
-    pub0.publish(fingertip1)
-    pub1.publish(fingertip2)
-    #rospy.loginfo(fingertip1[0])
-    #rospy.loginfo(fingertip1[1])
+    if IMGcounter == 512:
+        IMGcounter = 0
+    pub0.publish(fingertip)
+    pub1.publish(fingertip)
+    pub2.publish(fingertip)
+#    print(pressure_value[0])
 
-
-
-
-
-
-
+    # rospy.loginfo(fingertip1[1])
 
 
 def listener():
-    global fingertip1, fingertip2,pub0,pub1
+    global fingertip, pub0, pub1, pub2
     while not rospy.is_shutdown():
         try:
             rospy.Subscriber("sensors/hand/spx", String, callback, queue_size=10)
             pub0 = rospy.Publisher('sensors/spx_fingertips/0', Floats, queue_size=10)
             pub1 = rospy.Publisher('sensors/spx_fingertips/1', Floats, queue_size=10)
+            pub2 = rospy.Publisher('sensors/spx_fingertips/2', Floats, queue_size=10)
             rospy.spin()
         except rospy.ROSInterruptException:
             print("Shuting down Enhanced Grasping!")
@@ -181,27 +170,23 @@ def listener():
 
 
 if __name__ == '__main__':
-    sensorvalue = np.zeros((8, BUFF_SIZE))
-    fingertip1=np.zeros(4)
-    fingertip2=np.zeros(4)
-    timing = 0
+    sensorvalue = np.zeros((13, BUFF_SIZE))
+    zeroflag = 0
     IMGcounter = 0
-    pressure_offset1 = 0
-    pressure_offset2 = 0
-    pressure_zero1=0
-    pressure_zero2=0
-    a='Value:'
-    flag1=False
-    flag2=False
+    fullscale=np.zeros(10)
+    ind=np.array([0,4,8])
+    fingertip = np.zeros(12)
+    pressure_offset = np.zeros(9)
+    intercept = np.zeros(10)
+    pressure_zero = np.zeros(9)
+    pressure_value = np.zeros(9)
+    temp_th = np.zeros(9)
+    j = np.zeros(9)
+    m = np.zeros(10)
+    flag = np.zeros(10,dtype=bool)
     index_counter = 0
     time_start = 0
-    alpha=4.6296
-    temp_th1=0
-    temp_th2=0
-    intercept1=165.97
-    intercept2=188.57
-    j1=0
-    j2=0
     plt.ion()
     rospy.init_node('fingertips_SPX_list', anonymous=True)
     listener()
+
