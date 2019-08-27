@@ -1,4 +1,3 @@
-// SoftwareWire library must be installed in order to use other analog pins for I2C communication
 #include "SoftwareWire.h"
 SoftwareWire myWire( A1, A0);   // A1=SDA, A2=SCL
 SoftwareWire my2Wire( A2, A0);  // A3=SDA, A2=SCL
@@ -36,7 +35,7 @@ void setup()
 
   //turn on  VCNL4040 for fingertip nr.1
   myWire.beginTransmission(addr2);   
-  myWire.write(0x0C);
+  myWire.write((byte)0x00);
   myWire.write((byte)0x00);
   myWire.write((byte)0x00);
   myWire.endTransmission();
@@ -49,7 +48,7 @@ void setup()
 
   //turn on  VCNL4040 for fingertip nr.2
   my2Wire.beginTransmission(addr2);  
-  my2Wire.write(0x0C);
+  my2Wire.write((byte)0x00);
   my2Wire.write((byte)0x00);
   my2Wire.write((byte)0x00);
   my2Wire.endTransmission();
@@ -62,7 +61,7 @@ void setup()
 
   //turn on  VCNL4040 for fingertip nr.3
   my3Wire.beginTransmission(addr2);   
-  my3Wire.write(0x0C);
+  my3Wire.write((byte)0x00);
   my3Wire.write((byte)0x00);
   my3Wire.write((byte)0x00);
   my3Wire.endTransmission();
@@ -249,14 +248,15 @@ void loop()
   Serial.print(proximity2);
   Serial.print(","); 
   Serial.print(light2);
-  Serial.println(",");
- // Serial.print(pressure3);
- // Serial.print(","); 
- // Serial.print(temp3);
- // Serial.print(",");  
- // Serial.print(proximity3);
- // Serial.print(","); 
- // Serial.println(light3);
+  Serial.print(",");
+  Serial.print(pressure3);
+  Serial.print(","); 
+  Serial.print(temp3);
+  Serial.print(",");  
+  Serial.print(proximity3);
+  Serial.print(","); 
+  Serial.println(light3);
+ //delay(10);
 }
 
 float get_pressure(int32_t pre0, int32_t pre1, int32_t pre2) {
@@ -277,7 +277,8 @@ float get_proximity(int16_t pro0, int16_t pro1) {
 }  
 
 
-int get_light(int16_t light0, int16_t light1) { 
- long light_t = (light1<<8 | light0);
+ int get_light(int16_t light0, int16_t light1) { 
+  long light_t = (light1<<8 | light0);
+  //light_t=(light_t/65536)*983;
   return light_t;
 }  
