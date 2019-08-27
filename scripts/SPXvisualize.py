@@ -57,13 +57,26 @@ global i
 #===============================================================================
 
 def callback1(data):
-    fingertip1 = np.array(data.data)
-    fingertip1 = fingertip1.reshape((4, 1, 1))
-    aux = fingertip1[0].astype(np.uint8)
-    aux = cv2.resize(aux, (100,100), interpolation=cv2.INTER_AREA)
-    im_color = (cv2.applyColorMap(aux, cv2.COLORMAP_HOT))
-    cv2.imshow("fingertip1 ", im_color)
+    fingertip = np.array(data.data)
+    fingertip = fingertip.reshape((12, 1, 1))
+    aux1 = fingertip[0].astype(np.uint8)
+    aux1 = cv2.resize(aux1, (200,200), interpolation=cv2.INTER_AREA)
+    im_color1 = (cv2.applyColorMap(aux1, cv2.COLORMAP_HOT))
+    cv2.imshow("fingertip1 ", im_color1)
+
+    aux2 = fingertip[4].astype(np.uint8)
+    aux2 = cv2.resize(aux2, (200,200), interpolation=cv2.INTER_AREA)
+    im_color2 = (cv2.applyColorMap(aux2, cv2.COLORMAP_HOT))
+    cv2.imshow("fingertip2 ", im_color2)
+
+    aux3 = fingertip[8].astype(np.uint8)
+    aux3 = cv2.resize(aux3, (200,200), interpolation=cv2.INTER_AREA)
+    im_color3 = (cv2.applyColorMap(aux3, cv2.COLORMAP_HOT))
+    cv2.imshow("fingertip3 ", im_color3)
+
+
     cv2.waitKey(1)
+
 
 def listener():
     while not rospy.is_shutdown():
