@@ -127,12 +127,7 @@ def callback(string):
                 zeroflag = 0
             if fingertip [i] > 255:
                 fingertip[i]=255
-        if fingertip[2] < 15 and fingertip[6] < 15 and fingertip[10] < 15:
-            fingertip[0] = 0
-            fingertip[4] = 0
-            fingertip[8] = 0
-            zeroflag = 0
-
+        
     else:
         fingertip[0] = 0
         fingertip[4] = 0
