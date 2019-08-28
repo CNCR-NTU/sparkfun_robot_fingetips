@@ -30,74 +30,45 @@ without the express permission of Prof. Martin McGinnity <martin.mcginnity@ntu.a
 __license__ = '2019 (C) CNCR@NTU, All rights reserved'
 __date__ = '13/02/2019'
 __version__ = '0.1'
-__file_name__ = 'pubFingertipSPX.py'
-__description__ = 'Subscribe SPX fingertip sensors'
+__file_name__ = 'getSPX.py'
+__description__ = 'Publishes the SPX fingertip sensor values in the topics'
 __compatibility__ = "Python 2 and Python 3"
 __platforms__ = "Sawyer and AR10 hand"
 
 #===============================================================================
 # IMPORT STATEMENTS
 #===============================================================================
-
 import rospy
-import os
-import cv2
+import serial
+import numpy as np
 from rospy_tutorials.msg import Floats
 from rospy.numpy_msg import numpy_msg
-from std_msgs.msg import String
-import numpy as np
-import matplotlib
-import matplotlib.pyplot as plt
-import time
+
+def main(pub):
+    ser = serial.Serial(port='/dev/ttyUSB0',baudrate=38400,timeout=0.25)
+    ser.flush();
+    print("connected to: " + ser.portstr + ", baudrate: "+str(ser.baudrate))
+    while not rospy.is_shutdown():
+        while ser.in_waiting:
+            buffer=ser.readline()
+            buffer = buffer.split(',')
+            if len(buffer)>12:
+                mat = np.asarray(buffer[0:len(buffer)-1], dtype=np.float32)
+                pub.publish(mat.flatten('F'))
+    ser.close()
 
 
-global i
-#===============================================================================
-# METHODS
-#===============================================================================
-
-def callback1(data):
-    fingertip = np.array(data.data)
-    fingertip = fingertip.reshape((12, 1, 1))
-    aux1 = fingertip[0].astype(np.uint8)
-    aux1 = cv2.resize(aux1, (200,200), interpolation=cv2.INTER_AREA)
-    im_color1 = (cv2.applyColorMap(aux1, cv2.COLORMAP_HOT))
-    cv2.imshow("fingertip1 ", im_color1)
-
-    aux2 = fingertip[4].astype(np.uint8)
-    aux2 = cv2.resize(aux2, (200,200), interpolation=cv2.INTER_AREA)
-    im_color2 = (cv2.applyColorMap(aux2, cv2.COLORMAP_HOT))
-    cv2.imshow("fingertip2 ", im_color2)
-
-    aux3 = fingertip[8].astype(np.uint8)
-    aux3 = cv2.resize(aux3, (200,200), interpolation=cv2.INTER_AREA)
-    im_color3 = (cv2.applyColorMap(aux3, cv2.COLORMAP_HOT))
-    cv2.imshow("fingertip3 ", im_color3)
-
-    cv2.waitKey(1)
-
-    fingertip1=np.array([fingertip[0],fingertip[1],fingertip[2],fingertip[3]])
-    fingertip2=np.array([fingertip[4],fingertip[5],fingertip[6],fingertip[7]])
-    fingertip3=np.array([fingertip[8],fingertip[9],fingertip[10],fingertip[11]])
-
-    pub0.publish(fingertip1)
-    pub1.publish(fingertip2)
-    pub2.publish(fingertip3)
-
-def listener():
-    global pub0,pub1,pub2
-
+def publisher():
+    global flag, out
     while not rospy.is_shutdown():
         try:
-            pub0 = rospy.Publisher('sensors/spx_fingertips/0', Floats, queue_size=10)
-            pub1 = rospy.Publisher('sensors/spx_fingertips/1', Floats, queue_size=10)
-            pub2 = rospy.Publisher('sensors/spx_fingertips/2', Floats, queue_size=10)
-            rospy.Subscriber('sensors/spx_fingertips/raw', Floats, callback1)
-            # rospy.Subscriber('sensors/spx_fingertips/1', Floats, callback2)
-
+            pub = rospy.Publisher('sensors/spx/raw', numpy_msg(Floats), queue_size=1)
+            print("SPX sensor 0 published in topic: sensors/spx/raw.")
+            main(pub)
             rospy.spin()
         except rospy.ROSInterruptException:
-            print("Shuting down the Biotac subscriber!")
+            print("Shuting down the spx subscriber!")
+
 #===============================================================================
 #  TESTING AREA
 #===============================================================================
@@ -106,7 +77,8 @@ def listener():
 # MAIN METHOD
 #===============================================================================
 if __name__ == '__main__':
-    rospy.init_node('listener', anonymous=True)
+    print("[Initialising Fingertips...]\n")
+    rospy.init_node('fingertips_spx', anonymous=True)
+    publisher()
 
-    listener()
 

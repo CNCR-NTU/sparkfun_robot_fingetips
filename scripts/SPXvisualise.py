@@ -38,39 +38,66 @@ __platforms__ = "Sawyer and AR10 hand"
 #===============================================================================
 # IMPORT STATEMENTS
 #===============================================================================
+
 import rospy
+import os
+import cv2
+from rospy_tutorials.msg import Floats
+from rospy.numpy_msg import numpy_msg
 from std_msgs.msg import String
 import numpy as np
-import cv2
-import os
-import serial
-import struct
-
-def main(pub1):
-    global flag
-    ser = serial.Serial(port='/dev/ttyUSB0',baudrate=9600,timeout=0.25)
-    print("connected to: " + ser.portstr + ", baudrate: "+str(ser.baudrate))
-    while flag:
-        while ser.in_waiting:
-            string=ser.readline()
-            pub1.publish(string) #Format: "pressure1,temp1,proximity1,light1,pressure2,temp2,proximity2,light2,pressure3,temp3,proximity3,light3"
-
-    ser.close()
+import matplotlib
+import matplotlib.pyplot as plt
+import time
 
 
-def publisher():
-    global flag, out
+global i
+#===============================================================================
+# METHODS
+#===============================================================================
+
+def callback1(data):
+    fingertip = np.array(data.data)
+    fingertip = fingertip.reshape((12, 1, 1))
+    aux1 = fingertip[0].astype(np.uint8)
+    aux1 = cv2.resize(aux1, (200,200), interpolation=cv2.INTER_AREA)
+    im_color1 = (cv2.applyColorMap(aux1, cv2.COLORMAP_HOT))
+    cv2.imshow("fingertip1 ", im_color1)
+
+    aux2 = fingertip[4].astype(np.uint8)
+    aux2 = cv2.resize(aux2, (200,200), interpolation=cv2.INTER_AREA)
+    im_color2 = (cv2.applyColorMap(aux2, cv2.COLORMAP_HOT))
+    cv2.imshow("fingertip2 ", im_color2)
+
+    aux3 = fingertip[8].astype(np.uint8)
+    aux3 = cv2.resize(aux3, (200,200), interpolation=cv2.INTER_AREA)
+    im_color3 = (cv2.applyColorMap(aux3, cv2.COLORMAP_HOT))
+    cv2.imshow("fingertip3 ", im_color3)
+
+    cv2.waitKey(1)
+
+    fingertip1=np.array([fingertip[0],fingertip[1],fingertip[2],fingertip[3]])
+    fingertip2=np.array([fingertip[4],fingertip[5],fingertip[6],fingertip[7]])
+    fingertip3=np.array([fingertip[8],fingertip[9],fingertip[10],fingertip[11]])
+
+    pub0.publish(fingertip1)
+    pub1.publish(fingertip2)
+    pub2.publish(fingertip3)
+
+def listener():
+    global pub0,pub1,pub2
+
     while not rospy.is_shutdown():
         try:
-            pub = rospy.Publisher('sensors/hand/spx', String, queue_size=1)
-            print("spx published in topic: sensors/hand/spx.")
-            flag=True
-            main(pub)
+            pub0 = rospy.Publisher('sensors/spx/0', numpy_msg(Floats), queue_size=1)
+            pub1 = rospy.Publisher('sensors/spx/1', numpy_msg(Floats), queue_size=1)
+            pub2 = rospy.Publisher('sensors/spx/2', numpy_msg(Floats), queue_size=1)
+            rospy.Subscriber('sensors/spx_fingertips/raw', numpy_msg(Floats), callback1)
+            # rospy.Subscriber('sensors/spx_fingertips/1', Floats, callback2)
+
             rospy.spin()
         except rospy.ROSInterruptException:
-            print("Shuting down the spx subscriber!")
-            flag=False
-
+            print("Shuting down the Biotac subscriber!")
 #===============================================================================
 #  TESTING AREA
 #===============================================================================
@@ -79,8 +106,7 @@ def publisher():
 # MAIN METHOD
 #===============================================================================
 if __name__ == '__main__':
-    print("[Initialising Fingertips...]\n")
-    rospy.init_node('fingertips_SPX_pub', anonymous=True)
-    publisher()
+    rospy.init_node('listener', anonymous=True)
 
+    listener()
 

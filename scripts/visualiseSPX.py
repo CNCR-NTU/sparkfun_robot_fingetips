@@ -23,15 +23,15 @@ website: https://www.ntu.ac.uk/research/groups-and-centres/groups/computational-
 # ===============================================================================
 # PROGRAM METADATA
 # ===============================================================================
-__author__ = 'Gabriele Gaudino'
-__contact__ = 'n0859404@my.ntu.ac.uk'
+__author__ = 'Gabriele Gaudino, Pedro Machado'
+__contact__ = 'n0859404@my.ntu.ac.uk, pedro.baptistamachado@ntu.ac.uk'
 __copyright__ = 'Enhanced grasping project can not be copied and/or distributed \
-without the express permission of Prof. Martin McGinnity <martin.mcginnity@ntu.ac.uk'
+without the express permission of Prof. Martin McGinnity martin.mcginnity@ntu.ac.uk'
 __license__ = '2019 (C) CNCR@NTU, All rights reserved'
 __date__ = '13/02/2019'
 __version__ = '0.1'
-__file_name__ = 'SPXvisualize.py'
-__description__ = 'Subscribe SPX Fingertips sensrs'
+__file_name__ = 'visualiseSPX.py'
+__description__ = 'Visualise SPX Fingertips sensors'
 __compatibility__ = "Python 2 and Python 3"
 __platforms__ = "Sawyer and AR10 hand"
 import rospy
@@ -67,7 +67,6 @@ def callback(string):
     fingertip = np.array([sensorvalue[0, IMGcounter], sensorvalue[1, IMGcounter], sensorvalue[2, IMGcounter], sensorvalue[3, IMGcounter],
                           sensorvalue[4, IMGcounter], sensorvalue[5, IMGcounter], sensorvalue[6, IMGcounter], sensorvalue[7, IMGcounter],
                           sensorvalue[8, IMGcounter], sensorvalue[9, IMGcounter], sensorvalue[10, IMGcounter], sensorvalue[11, IMGcounter]])
-    #print(fingertip[5])
     if fingertip[2] > 200 or fingertip[6] > 200 or fingertip[10] > 200:
         if zeroflag1 == 0:
             intercept[0] = 896.64
@@ -144,43 +143,30 @@ def callback(string):
             #    zeroflag = 0
             if fingertip [i] > 255:
                 fingertip[i]=255
-        #if fingertip[2] < 15 and fingertip[6] < 15 and fingertip[10] < 15:
-        #    fingertip[0] = 0
-        #    fingertip[4] = 0
-        #    fingertip[8] = 0
-        #    zeroflag = 0
 
     else:
         fingertip[0] = 0
         fingertip[4] = 0
         fingertip[8] = 0
 
-        # adaptive filtering?
-#            if fingertip[i] > -0.15 and fingertip[i] < 0.15:
-#                fingertip[i] = 0
     print("pressure",fingertip[0],",",fingertip[4],",",fingertip[8])
-#    print("proximity",fingertip[2],",",fingertip[6],",",fingertip[10])
-
-#    print(pressure_value[0],",",pressure_value[4],",",pressure_value[8])
-
-
 
     IMGcounter = IMGcounter + 1
     if IMGcounter == 512:
         IMGcounter = 0
     pub0.publish(fingertip)
 
-#    print(pressure_value[0])
 
-    # rospy.loginfo(fingertip1[1])
 
 
 def listener():
     global fingertip, pub0, pub1, pub2
     while not rospy.is_shutdown():
         try:
-            rospy.Subscriber("sensors/hand/spx", String, callback, queue_size=10)
-            pub0 = rospy.Publisher('sensors/spx_fingertips/raw', Floats, queue_size=10)
+            pub0 = rospy.Publisher('sensors/spx/0', numpy_msg(Floats), queue_size=1)
+            pub1 = rospy.Publisher('sensors/spx/1', numpy_msg(Floats), queue_size=1)
+            pub2 = rospy.Publisher('sensors/spx/2', numpy_msg(Floats), queue_size=1)
+            rospy.Subscriber("sensors/spx/raw", String, callback, queue_size=1)
 
             rospy.spin()
         except rospy.ROSInterruptException:

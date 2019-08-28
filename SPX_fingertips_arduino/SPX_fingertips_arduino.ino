@@ -1,4 +1,4 @@
-#include "SoftwareWire.h"
+#include <SoftwareWire.h>
 SoftwareWire myWire( A1, A0);   // A1=SDA, A2=SCL
 SoftwareWire my2Wire( A2, A0);  // A3=SDA, A2=SCL
 SoftwareWire my3Wire( A3, A0);
@@ -10,7 +10,7 @@ SoftwareWire my3Wire( A3, A0);
 
 void setup() 
 {
-  Serial.begin(9600);                
+  Serial.begin(38400);                
   
   //turn on  LPS25HB for fingertip nr.1
   myWire.begin();
@@ -255,7 +255,8 @@ void loop()
   Serial.print(",");  
   Serial.print(proximity3);
   Serial.print(","); 
-  Serial.println(light3);
+  Serial.print(light3);
+  Serial.println(","); 
  //delay(10);
 }
 
