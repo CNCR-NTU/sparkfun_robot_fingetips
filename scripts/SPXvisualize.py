@@ -74,25 +74,27 @@ def callback1(data):
     im_color3 = (cv2.applyColorMap(aux3, cv2.COLORMAP_HOT))
     cv2.imshow("fingertip3 ", im_color3)
 
-    fingertip1=np.array([fingertip[0],fingertip[1],fingerti[2],fingertip[3])
-    fingertip2=np.array([fingertip[4],fingertip[5],fingerti[6],fingertip[7])
-    fingertip3=np.array([fingertip[8],fingertip[9],fingerti[10],fingertip[11])
+    cv2.waitKey(1)
+
+    fingertip1=np.array([fingertip[0],fingertip[1],fingertip[2],fingertip[3]])
+    fingertip2=np.array([fingertip[4],fingertip[5],fingertip[6],fingertip[7]])
+    fingertip3=np.array([fingertip[8],fingertip[9],fingertip[10],fingertip[11]])
 
     pub0.publish(fingertip1)
     pub1.publish(fingertip2)
     pub2.publish(fingertip3)
 
-    cv2.waitKey(1)
-
-
 def listener():
+    global pub0,pub1,pub2
+
     while not rospy.is_shutdown():
         try:
-            rospy.Subscriber('sensors/spx_fingertips/raw', Floats, callback1)
-            # rospy.Subscriber('sensors/spx_fingertips/1', Floats, callback2)
             pub0 = rospy.Publisher('sensors/spx_fingertips/0', Floats, queue_size=10)
             pub1 = rospy.Publisher('sensors/spx_fingertips/1', Floats, queue_size=10)
             pub2 = rospy.Publisher('sensors/spx_fingertips/2', Floats, queue_size=10)
+            rospy.Subscriber('sensors/spx_fingertips/raw', Floats, callback1)
+            # rospy.Subscriber('sensors/spx_fingertips/1', Floats, callback2)
+
             rospy.spin()
         except rospy.ROSInterruptException:
             print("Shuting down the Biotac subscriber!")
