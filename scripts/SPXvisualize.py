@@ -81,7 +81,7 @@ def callback1(data):
 def listener():
     while not rospy.is_shutdown():
         try:
-            rospy.Subscriber('sensors/spx_fingertips/0', Floats, callback1)
+            rospy.Subscriber('sensors/spx_fingertips/raw', Floats, callback1)
             # rospy.Subscriber('sensors/spx_fingertips/1', Floats, callback2)
 
             rospy.spin()
@@ -98,3 +98,4 @@ if __name__ == '__main__':
     rospy.init_node('listener', anonymous=True)
 
     listener()
+
