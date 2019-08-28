@@ -51,7 +51,7 @@ P = 0.80
 
 
 def callback(string):
-    global zeroflag, index_counter, time_start, j, sensorvalue, pressure_zero, pressure_offset, IMGcounter, fingertip, temp_th, intercept, flag, pressure_value,fullscale
+    global zeroflag1,zeroflag2,zeroflag3, index_counter, time_start, j, sensorvalue, pressure_zero, pressure_offset, IMGcounter, fingertip, temp_th, intercept, flag, pressure_value,fullscale
     buffer = string.data
     buffer = buffer.split(',')
     if index_counter == 0:
@@ -67,37 +67,50 @@ def callback(string):
     fingertip = np.array([sensorvalue[0, IMGcounter], sensorvalue[1, IMGcounter], sensorvalue[2, IMGcounter], sensorvalue[3, IMGcounter],
                           sensorvalue[4, IMGcounter], sensorvalue[5, IMGcounter], sensorvalue[6, IMGcounter], sensorvalue[7, IMGcounter],
                           sensorvalue[8, IMGcounter], sensorvalue[9, IMGcounter], sensorvalue[10, IMGcounter], sensorvalue[11, IMGcounter]])
-
     #print(fingertip[5])
-    if fingertip[2] > 800 or fingertip[6] > 800 or fingertip[10] > 800:
-
-        if zeroflag == 0:  # put flag instead of variable
+    if fingertip[2] > 200 or fingertip[6] > 200 or fingertip[10] > 200:
+        if zeroflag1 == 0:
             intercept[0] = 896.64
-            intercept[4] = 885.36
-            intercept[8] = 858.34
             intercept[1] = 895.44
-            intercept[5] = 884.16
-            intercept[9] = 860.27
-            fullscale[0] = 1 #Temporary value
-            fullscale[4] = 3.755431
-            fullscale[8] = 4.37586
+            fullscale[0] = 0.4
             fullscale[1] = 30227
-            fullscale[5] = 25257
-            fullscale[9] = 18905
-            m[0]=4.2608
-            m[4]=4.6385
-            m[8]=5.1346
-            m[1]=4.2999
-            m[5]=4.6740
-            m[9]=5.0898
+            m[0] = 4.2608
+            m[1] = 4.2999
+            zeroflag1 = 1
             for i in ind:
-               pressure_zero[i] = fingertip[i]
-               temp_th[i] = fingertip[i+1]
-               pressure_offset[i] = (m[i]*fingertip[i+1]+intercept[i]) - pressure_zero[i]
-               j[i]= fingertip[i] - pressure_offset[i]
-        zeroflag = 1
-        for i in ind:
+                pressure_zero[i] = fingertip[i]
+                temp_th[i] = fingertip[i + 1]
+                pressure_offset[i] = (m[i] * fingertip[i + 1] + intercept[i]) - pressure_zero[i]
+                j[i] = fingertip[i] - pressure_offset[i]
+        if zeroflag2 == 0:
+            intercept[4] = 885.36
+            intercept[5] = 884.16
+            fullscale[4] = 2
+            fullscale[5] = 25000
+            m[4] = 4.6385
+            m[5] = 4.6740
+            zeroflag2 = 1
+            for i in ind:
+                pressure_zero[i] = fingertip[i]
+                temp_th[i] = fingertip[i + 1]
+                pressure_offset[i] = (m[i] * fingertip[i + 1] + intercept[i]) - pressure_zero[i]
+                j[i] = fingertip[i] - pressure_offset[i]
+        if zeroflag3 == 0:
+            intercept[8] = 858.34
+            intercept[9] = 860.27
+            fullscale[8] = 3
+            fullscale[9] = 18905
+            m[8] = 5.1346
+            m[9] = 5.0898
+            zeroflag3 = 1
+            for i in ind:
+                pressure_zero[i] = fingertip[i]
+                temp_th[i] = fingertip[i + 1]
+                pressure_offset[i] = (m[i] * fingertip[i + 1] + intercept[i]) - pressure_zero[i]
+                j[i] = fingertip[i] - pressure_offset[i]
 
+
+        for i in ind:
 
             if temp_th[i] < fingertip[i+1] or temp_th[i] == fingertip[i+1]:  # this section is to reduce pressure zero-point float with the temperature.
                 if flag[i] == False:
@@ -111,31 +124,41 @@ def callback(string):
                     intercept[i+1] = ((pressure_offset[i] + pressure_zero[i])-(m[i+1] * (fingertip[i+1])))
                     flag[i] = False
                 pressure_offset[i] = (m[i+1]*fingertip[i+1]+intercept[i+1]) - pressure_zero[i]
-            #print("pressure reading", fingertip[0])
-            #print("pressure zero", pressure_zero[0])
-            #print("pressure offset", pressure_offset[0])
-            #print("constantj",j[0])
-            #print("intercept", intercept[0])
+
             pressure_value[i] = fingertip[i] - pressure_offset[i] - j[i]
             temp_th[i]=fingertip[i+1]
-            if pressure_value[i]<0:
-                pressure_value[i]=0
+            if pressure_value[0]<-0.2:
+                pressure_value[0]=0
+                zeroflag1=0
+            if pressure_value[4] < -0.3:
+                pressure_value[4] = 0
+                zeroflag2 = 0
+            if pressure_value[8] < -0.3:
+                pressure_value[8] = 0
+                zeroflag3 = 0
+
             fingertip[i] = (pressure_value[i] / fullscale[i]) * 255
             fingertip[i+2] = (fingertip[i+2] / fullscale[i+1]) * 255
             if fingertip[i] < 0:
                 fingertip[i] = 0
-                zeroflag = 0
+            #    zeroflag = 0
             if fingertip [i] > 255:
                 fingertip[i]=255
-        
+        #if fingertip[2] < 15 and fingertip[6] < 15 and fingertip[10] < 15:
+        #    fingertip[0] = 0
+        #    fingertip[4] = 0
+        #    fingertip[8] = 0
+        #    zeroflag = 0
+
     else:
         fingertip[0] = 0
         fingertip[4] = 0
         fingertip[8] = 0
-                # adaptive filtering?
+
+        # adaptive filtering?
 #            if fingertip[i] > -0.15 and fingertip[i] < 0.15:
 #                fingertip[i] = 0
-#    print("pressure",fingertip[0],",",fingertip[4],",",fingertip[8])
+    print("pressure",fingertip[0],",",fingertip[4],",",fingertip[8])
 #    print("proximity",fingertip[2],",",fingertip[6],",",fingertip[10])
 
 #    print(pressure_value[0],",",pressure_value[4],",",pressure_value[8])
@@ -168,7 +191,9 @@ def listener():
 
 if __name__ == '__main__':
     sensorvalue = np.zeros((13, BUFF_SIZE))
-    zeroflag = 0
+    zeroflag1 = 0
+    zeroflag2 = 0
+    zeroflag3 = 0
     IMGcounter = 0
     fullscale=np.zeros(10)
     ind=np.array([0,4,8])
@@ -186,6 +211,4 @@ if __name__ == '__main__':
     plt.ion()
     rospy.init_node('fingertips_SPX_list', anonymous=True)
     listener()
-
-
 
