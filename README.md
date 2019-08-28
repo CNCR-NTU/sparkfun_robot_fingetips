@@ -30,7 +30,6 @@ $ git clone https://github.com/CNCR-NTU/sparkfun_robot_fingertips.git
 ```
 $ cd ~/catkin_ws
 $ catkin_make
-$ catkin_make install
 $ source devel/setup.sh
 ```
 
