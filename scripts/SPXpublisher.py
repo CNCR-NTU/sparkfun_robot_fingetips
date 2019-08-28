@@ -68,7 +68,7 @@ def callback(string):
                           sensorvalue[4, IMGcounter], sensorvalue[5, IMGcounter], sensorvalue[6, IMGcounter], sensorvalue[7, IMGcounter],
                           sensorvalue[8, IMGcounter], sensorvalue[9, IMGcounter], sensorvalue[10, IMGcounter], sensorvalue[11, IMGcounter]])
 
-    print(fingertip[5])
+    #print(fingertip[5])
     if fingertip[2] > 800 or fingertip[6] > 800 or fingertip[10] > 800:
 
         if zeroflag == 0:  # put flag instead of variable
