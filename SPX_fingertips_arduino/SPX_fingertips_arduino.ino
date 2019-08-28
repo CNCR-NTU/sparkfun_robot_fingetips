@@ -200,7 +200,7 @@ void loop()
      }
  
    my3Wire.beginTransmission(addr1);     //retrieving data from LPS25HB registers (fingertip nr.2) for temperature bytes    
-    myWire.write(0x2B | 0x80);
+   my3Wire.write(0x2B | 0x80);
    my3Wire.endTransmission(false); 
    my3Wire.requestFrom(addr1, 2);
      if(my3Wire.available() == 2)
