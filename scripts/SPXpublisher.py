@@ -68,16 +68,16 @@ def callback(string):
                           sensorvalue[4, IMGcounter], sensorvalue[5, IMGcounter], sensorvalue[6, IMGcounter], sensorvalue[7, IMGcounter],
                           sensorvalue[8, IMGcounter], sensorvalue[9, IMGcounter], sensorvalue[10, IMGcounter], sensorvalue[11, IMGcounter]])
 
-
-    if fingertip[2] > 1300 or fingertip[6] > 1300 or fingertip[10] > 1300:
+    print(fingertip[5])
+    if fingertip[2] > 800 or fingertip[6] > 800 or fingertip[10] > 800:
 
         if zeroflag == 0:  # put flag instead of variable
             intercept[0] = 896.64
             intercept[4] = 885.36
-            intercept[8] = 884.16
+            intercept[8] = 858.34
             intercept[1] = 895.44
-            intercept[5] = 860.27
-            intercept[9] = 884.16
+            intercept[5] = 884.16
+            intercept[9] = 860.27
             fullscale[0] = 0.747518
             fullscale[4] = 3.755431
             fullscale[8] = 4.37586
@@ -89,28 +89,33 @@ def callback(string):
             m[8]=5.1346
             m[1]=4.2999
             m[5]=4.6740
-            m[9]=5.1346
+            m[9]=5.0898
             for i in ind:
                pressure_zero[i] = fingertip[i]
                temp_th[i] = fingertip[i+1]
-               pressure_offset[i] = (m[i]*fingertip[i+1]-intercept[i]) - pressure_zero[i]
+               pressure_offset[i] = (m[i]*fingertip[i+1]+intercept[i]) - pressure_zero[i]
                j[i]= fingertip[i] - pressure_offset[i]
         zeroflag = 1
         for i in ind:
 
+
             if temp_th[i] < fingertip[i+1] or temp_th[i] == fingertip[i+1]:  # this section is to reduce pressure zero-point float with the temperature.
                 if flag[i] == False:
-                    intercept[i] = ((m[i] * (fingertip[i+1])) - (pressure_offset[i] + pressure_zero[i]))
+                    intercept[i] = ((pressure_offset[i] + pressure_zero[i])-(m[i] * (fingertip[i+1])))
                     flag[i] = True
-                pressure_offset[i] = (m[i]*fingertip[i+1]-intercept[i]) - pressure_zero[i]
+                pressure_offset[i] = (m[i]*fingertip[i+1]+intercept[i]) - pressure_zero[i]
 
 
             if temp_th[i] > fingertip[i+1]:
-                if flag[i+1] == True:
-                    intercept[i+1] = ((m[i+1] * (fingertip[i+1])) - (pressure_offset[i] + pressure_zero[i]))
-                    flag[i+1] = False
-                pressure_offset[i] = (m[i+1]*fingertip[i+1]-intercept[i+1]) - pressure_zero[i]
-
+                if flag[i] == True:
+                    intercept[i+1] = ((pressure_offset[i] + pressure_zero[i])-(m[i+1] * (fingertip[i+1])))
+                    flag[i] = False
+                pressure_offset[i] = (m[i+1]*fingertip[i+1]+intercept[i+1]) - pressure_zero[i]
+            #print("pressure reading", fingertip[0])
+            #print("pressure zero", pressure_zero[0])
+            #print("pressure offset", pressure_offset[0])
+            #print("constantj",j[0])
+            #print("intercept", intercept[0])
             pressure_value[i] = fingertip[i] - pressure_offset[i] - j[i]
             temp_th[i]=fingertip[i+1]
             if pressure_value[i]<0:
@@ -135,7 +140,7 @@ def callback(string):
                 # adaptive filtering?
 #            if fingertip[i] > -0.15 and fingertip[i] < 0.15:
 #                fingertip[i] = 0
-    print("pressure",fingertip[0],",",fingertip[4],",",fingertip[8])
+#    print("pressure",fingertip[0],",",fingertip[4],",",fingertip[8])
 #    print("proximity",fingertip[2],",",fingertip[6],",",fingertip[10])
 
 #    print(pressure_value[0],",",pressure_value[4],",",pressure_value[8])
