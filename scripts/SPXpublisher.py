@@ -78,7 +78,7 @@ def callback(string):
             intercept[1] = 895.44
             intercept[5] = 884.16
             intercept[9] = 860.27
-            fullscale[0] = 0.747518
+            fullscale[0] = 1 #Temporary value
             fullscale[4] = 3.755431
             fullscale[8] = 4.37586
             fullscale[1] = 30227
