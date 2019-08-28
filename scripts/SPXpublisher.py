@@ -73,11 +73,11 @@ def callback(string):
 
         if zeroflag == 0:  # put flag instead of variable
             intercept[0] = 896.64
-            intercept[4] = 895.44
-            intercept[8] = 895.44
-            intercept[1] = 896.64
-            intercept[5] = 895.44
-            intercept[9] = 895.44
+            intercept[4] = 885.36
+            intercept[8] = 884.16
+            intercept[1] = 895.44
+            intercept[5] = 860.27
+            intercept[9] = 884.16
             fullscale[0] = 0.747518
             fullscale[4] = 3.755431
             fullscale[8] = 4.37586
@@ -85,11 +85,11 @@ def callback(string):
             fullscale[5] = 25257
             fullscale[9] = 18905
             m[0]=4.2608
-            m[4]=4.2999
-            m[8]=4.2999
-            m[1]=4.2608
-            m[5]=4.2999
-            m[9]=4.2999
+            m[4]=4.6385
+            m[8]=5.1346
+            m[1]=4.2999
+            m[5]=4.6740
+            m[9]=5.1346
             for i in ind:
                pressure_zero[i] = fingertip[i]
                temp_th[i] = fingertip[i+1]
@@ -117,18 +117,17 @@ def callback(string):
                 pressure_value[i]=0
             fingertip[i] = (pressure_value[i] / fullscale[i]) * 255
             fingertip[i+2] = (fingertip[i+2] / fullscale[i+1]) * 255
+            if fingertip[i] < 0:
+                fingertip[i] = 0
+                zeroflag = 0
+            if fingertip [i] > 255:
+                fingertip[i]=255
         if fingertip[2] < 15 and fingertip[6] < 15 and fingertip[10] < 15:
             fingertip[0] = 0
             fingertip[4] = 0
             fingertip[8] = 0
             zeroflag = 0
-            #### scaling the values to the range 0-255 #####
 
-        if fingertip[0] < 0 or fingertip[4] < 0 or fingertip[0] > 255 or fingertip[4] > 255:
-             fingertip[0] = 0
-             fingertip[4] = 0
-
-             zeroflag = 0
     else:
         fingertip[0] = 0
         fingertip[4] = 0
@@ -136,7 +135,7 @@ def callback(string):
                 # adaptive filtering?
 #            if fingertip[i] > -0.15 and fingertip[i] < 0.15:
 #                fingertip[i] = 0
-#    print("pressure",fingertip[0],",",fingertip[4],",",fingertip[8])
+    print("pressure",fingertip[0],",",fingertip[4],",",fingertip[8])
 #    print("proximity",fingertip[2],",",fingertip[6],",",fingertip[10])
 
 #    print(pressure_value[0],",",pressure_value[4],",",pressure_value[8])
@@ -147,8 +146,7 @@ def callback(string):
     if IMGcounter == 512:
         IMGcounter = 0
     pub0.publish(fingertip)
-    pub1.publish(fingertip)
-    pub2.publish(fingertip)
+
 #    print(pressure_value[0])
 
     # rospy.loginfo(fingertip1[1])
@@ -159,9 +157,8 @@ def listener():
     while not rospy.is_shutdown():
         try:
             rospy.Subscriber("sensors/hand/spx", String, callback, queue_size=10)
-            pub0 = rospy.Publisher('sensors/spx_fingertips/0', Floats, queue_size=10)
-            pub1 = rospy.Publisher('sensors/spx_fingertips/1', Floats, queue_size=10)
-            pub2 = rospy.Publisher('sensors/spx_fingertips/2', Floats, queue_size=10)
+            pub0 = rospy.Publisher('sensors/spx_fingertips/raw', Floats, queue_size=10)
+
             rospy.spin()
         except rospy.ROSInterruptException:
             print("Shuting down Enhanced Grasping!")
@@ -189,4 +186,6 @@ if __name__ == '__main__':
     plt.ion()
     rospy.init_node('fingertips_SPX_list', anonymous=True)
     listener()
+
+
 
