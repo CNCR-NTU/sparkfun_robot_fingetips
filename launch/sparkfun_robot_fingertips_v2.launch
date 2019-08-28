@@ -1,0 +1,4 @@
+<launch>
+  <machine name="rpi" address="localhost" default="false" timeout="5" env-loader="$HOME/catkin_ws/intera.sh" />
+  <node machine="rpi" name = 'spx_publisher' pkg = "sparkfun_robot_fingertips" type = "spx_publisher.py" />
+</launch>

@@ -39,7 +39,6 @@ import os
 import cv2
 from rospy_tutorials.msg import Floats
 from rospy.numpy_msg import numpy_msg
-from std_msgs.msg import String
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
@@ -47,17 +46,21 @@ import time
 
 global zeroflag, index_counter, time_start, temp_th, intercept, flag, j
 BUFF_SIZE = 512
+global matrix, mat_index
+matrix=np.zeros([BUFF_SIZE,4,3])
 P = 0.80
+visualisationFlag=True
+scale_percent=6000
 
 
-def callback(string):
+
+def callback(data):
     global zeroflag1,zeroflag2,zeroflag3, index_counter, time_start, j, sensorvalue, pressure_zero, pressure_offset, IMGcounter, fingertip, temp_th, intercept, flag, pressure_value,fullscale
-    buffer = string.data
-    buffer = buffer.split(',')
+    buffer = data.data
     if index_counter == 0:
         sensorvalue = np.zeros((12, BUFF_SIZE))
     for i in range(0, 11):
-        sensorvalue[i, index_counter] = float(buffer[i])
+        sensorvalue[i, index_counter] = buffer[i]
     if index_counter < BUFF_SIZE - 1:
         index_counter += 1
     else:
@@ -166,8 +169,7 @@ def listener():
             pub0 = rospy.Publisher('sensors/spx/0', numpy_msg(Floats), queue_size=1)
             pub1 = rospy.Publisher('sensors/spx/1', numpy_msg(Floats), queue_size=1)
             pub2 = rospy.Publisher('sensors/spx/2', numpy_msg(Floats), queue_size=1)
-            rospy.Subscriber("sensors/spx/raw", String, callback, queue_size=1)
-
+            rospy.Subscriber("sensors/spx/raw", numpy_msg(Floats), callback)
             rospy.spin()
         except rospy.ROSInterruptException:
             print("Shuting down Enhanced Grasping!")
@@ -195,6 +197,7 @@ if __name__ == '__main__':
     index_counter = 0
     time_start = 0
     plt.ion()
+    mat_index=0
     rospy.init_node('fingertips_SPX_list', anonymous=True)
     listener()
 

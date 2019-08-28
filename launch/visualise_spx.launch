@@ -1,0 +1,4 @@
+<launch>
+  <machine name="ISTeC031A-02" address="localhost" default="true" env-loader="$HOME/catkin_ws/intera.sh" />
+  <node machine="ISTeC031A-02" name = 'visualise_spx' pkg = "sparkfun_robot_fingertips" type = "visualise_spx.py" />
+</launch>
