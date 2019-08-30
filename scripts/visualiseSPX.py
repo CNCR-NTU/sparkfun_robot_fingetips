@@ -59,7 +59,7 @@ def callback(data):
     buffer = data.data
     if index_counter == 0:
         sensorvalue = np.zeros((12, BUFF_SIZE))
-    for i in range(0, 11):
+    for i in range(0, 12):
         sensorvalue[i, index_counter] = buffer[i]
     if index_counter < BUFF_SIZE - 1:
         index_counter += 1
