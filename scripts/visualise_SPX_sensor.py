@@ -47,11 +47,13 @@ scale_percent=8000
 def callback_spx(data,publishers):
     global matrix, mat_index
     mat=data.data
+    #print(mat)
     for sensor in range(0, 3):
         aux=np.zeros((4,4),dtype=np.uint8)
         publishers[sensor].publish(np.asarray(mat[sensor*4:sensor*4+4], dtype=np.float32).flatten('F'))
         data_aux=mat[sensor*4:sensor*4+4]
-        aux[0,0]=np.uint8(data_aux[0]*255/1024)
+        print(data_aux)
+        aux[0, 0] = data_aux[0].astype(np.uint8)
         aux[1, 1] = data_aux[1].astype(np.uint8)
         aux[2, 2] = data_aux[2].astype(np.uint8)
         aux[3, 3] = data_aux[3].astype(np.uint8)
@@ -62,10 +64,12 @@ def callback_spx(data,publishers):
             # resize image
             aux = cv2.resize(aux, dim, interpolation=cv2.INTER_AREA)
             im_color = (cv2.applyColorMap(aux, cv2.COLORMAP_HOT))
-            cv2.imshow("Sensor " + str(sensor), im_color)
+            cv2.imshow("Sensor " + str(sensor+1) , im_color)
+
         if visualisationFlag and cv2.waitKey(1) & 0xFF == ord('q'):
             rospy.signal_shutdown('Quit')
             cv2.destroyAllWindows()
+
 
 def listener():
     while not rospy.is_shutdown():
@@ -73,7 +77,7 @@ def listener():
             pub0 = rospy.Publisher('sensors/spx/0', numpy_msg(Floats), queue_size=1)
             pub1 = rospy.Publisher('sensors/spx/1', numpy_msg(Floats), queue_size=1)
             pub2 = rospy.Publisher('sensors/spx/2', numpy_msg(Floats), queue_size=1)
-            rospy.Subscriber("sensors/spx/raw", numpy_msg(Floats), callback_spx, ([pub0, pub1, pub2]))
+            rospy.Subscriber("sensors/spx/scaled", numpy_msg(Floats), callback_spx, ([pub0, pub1, pub2]))
             rospy.spin()
         except rospy.ROSInterruptException:
             print("Shuting down Enhanced Grasping!")
@@ -84,4 +88,5 @@ def listener():
 if __name__ == '__main__':
     rospy.init_node('fingertips_SPX_list', anonymous=True)
     listener()
+
 
