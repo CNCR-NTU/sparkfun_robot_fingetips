@@ -169,7 +169,7 @@ def callback(data):
     IMGcounter = IMGcounter + 1
     if IMGcounter == 512:
         IMGcounter = 0
-    print("pressure", pressure_value[0], ",", fingertip[1], ",", fingertip[2], ",", fingertip[3])
+    print("pressure1:", fingertip[0], "  ", "pressure2:", fingertip[4], "  ", "pressure3:", "  ", fingertip[8])
 
     pub0.publish(fingertip)
 
