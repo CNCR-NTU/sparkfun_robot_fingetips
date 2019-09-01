@@ -117,7 +117,7 @@ def callback(data):
 
         for i in ind:
 
-            if temp_th[i] < fingertip[i+1] or temp_th[i] == fingertip[i+1]:  # this section is to reduce pressure zero-point float with the temperature.
+            if temp_th[i] < fingertip[i+1]:  # this section is to reduce pressure zero-point float with the temperature.
                 if flag[i] == False:
                     intercept[i] = ((pressure_offset[i] + pressure_zero[i])-(m[i] * (fingertip[i+1])))
                     flag[i] = True
