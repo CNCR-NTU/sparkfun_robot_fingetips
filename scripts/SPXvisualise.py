@@ -50,8 +50,6 @@ import matplotlib
 import matplotlib.pyplot as plt
 import time
 
-
-global i
 #===============================================================================
 # METHODS
 #===============================================================================
@@ -92,8 +90,11 @@ def listener():
             pub0 = rospy.Publisher('sensors/spx/0', numpy_msg(Floats), queue_size=1)
             pub1 = rospy.Publisher('sensors/spx/1', numpy_msg(Floats), queue_size=1)
             pub2 = rospy.Publisher('sensors/spx/2', numpy_msg(Floats), queue_size=1)
+            print("Sensor 0 published in topic: /sensors/spx/0.")
+            print("Sensor 1 published in topic: /sensors/spx/1.")
+            print("Sensor 2 published in topic: /sensors/spx/2.")
             rospy.Subscriber('sensors/spx_fingertips/raw', numpy_msg(Floats), callback1)
-            # rospy.Subscriber('sensors/spx_fingertips/1', Floats, callback2)
+            
 
             rospy.spin()
         except rospy.ROSInterruptException:
@@ -107,6 +108,5 @@ def listener():
 #===============================================================================
 if __name__ == '__main__':
     rospy.init_node('listener', anonymous=True)
-
     listener()
 
