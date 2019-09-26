@@ -107,6 +107,6 @@ def listener():
 # MAIN METHOD
 #===============================================================================
 if __name__ == '__main__':
-    rospy.init_node('listener', anonymous=True)
+    rospy.init_node('SPX_sensors_visualiser', anonymous=True)
     listener()
 
