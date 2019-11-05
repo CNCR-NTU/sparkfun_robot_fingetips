@@ -1,6 +1,6 @@
 # sparkfun_robot_fingertips
 
-This is repository for hosting the Sparkfun Robot Fingertips sensors sofware released under the lgpl3.0 license.
+This is repository for hosting the Sparkfun Robot Fingertips sensors software released under the lgpl3.0 license.
 
 # Requirements
 
@@ -46,8 +46,6 @@ string[pressure1,temp1,proximity1,light1,pressure2,temp2,proximity2,light2,press
 
 # Contacts
 Computational Neurosciences and Cognitive Robotics Group at the Nottingham Trent University.
-
-Gabriele Gaudino <gabriele.gaudino2018@my.ntu.ac.uk>
 
 Pedro Machado <pedro.baptistamachado@ntu.ac.uk>
 
